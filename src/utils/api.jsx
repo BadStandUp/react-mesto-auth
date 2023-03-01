@@ -1,4 +1,4 @@
-import {apiSettings} from "./constants.js";
+import {apiSettings} from "./constants.jsx";
 
 export default class Api {
     constructor(options) {
