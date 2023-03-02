@@ -46,7 +46,7 @@ function App() {
             .catch((err) => {
                 console.log(err)
             })
-    }, [])
+    }, [cards])
 
     useEffect(() => {
         api.getUserInfo()
@@ -54,7 +54,7 @@ function App() {
                 setCurrentUser(info);
             })
             .catch((err) => console.log(err));
-    }, [])
+    }, [setCurrentUser])
 
     function handleEditProfileClick() {
         setIsEditProfilePopupOpen(true);
@@ -163,7 +163,7 @@ function App() {
     }
 
     useEffect(() => {
-        let token = localStorage.getItem('jwt');
+        const token = localStorage.getItem('jwt');
 
         if (token) {
             auth.getContent(token)

@@ -19,8 +19,8 @@ function Header(props) {
 
                 {props.loggedIn && <p className='header__link'>{props.email}</p>}
 
-                { <NavLink className={({isActive}) => `header__link ${isActive ? "header__link_active" : "header__link_hidden"}`}
-                    to='/' onClick={handleLogout}>Выйти</NavLink>}
+                <NavLink className={({isActive}) => `header__link ${isActive ? "header__link_active" : "header__link_hidden"}`}
+                    to='/' onClick={handleLogout}>Выйти</NavLink>
                 {!props.loggedIn && <NavLink className={({isActive}) => `header__link ${isActive ? "header__link_hidden" : ""}`}
                           to='/sign-in'>Войти</NavLink>}
                 {!props.loggedIn && <NavLink className={({isActive}) => `header__link ${isActive ? "header__link_hidden" : ""}`}
