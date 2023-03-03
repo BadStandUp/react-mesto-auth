@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
@@ -18,9 +18,7 @@ import * as auth from '../utils/auth';
 import confirm from '../images/confirm-icon.svg';
 import error from '../images/error-icon.svg';
 
-
 function App() {
-
     const [cards, setCards] = useState([]);
     const [currentUser, setCurrentUser] = useState({});
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -46,7 +44,7 @@ function App() {
             .catch((err) => {
                 console.log(err)
             })
-    }, [cards])
+    }, [])
 
     useEffect(() => {
         api.getUserInfo()
@@ -54,7 +52,7 @@ function App() {
                 setCurrentUser(info);
             })
             .catch((err) => console.log(err));
-    }, [setCurrentUser])
+    }, [])
 
     function handleEditProfileClick() {
         setIsEditProfilePopupOpen(true);
@@ -72,14 +70,19 @@ function App() {
         setSelectedCard(card);
     }
 
-    function closeAllPopups() {
+    function handleDeleteCard(card) {
+        setIsConfirmationPopupOpen(true);
+        setDeletedCard(card);
+    }
+
+    const closeAllPopups = useCallback(() => {
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
         setIsEditAvatarPopupOpen(false);
         setSelectedCard(null);
         setIsConfirmationPopupOpen(false);
         setIsInfoToolTipPopupOpen(false);
-    }
+    }, [])
 
     function closeOnOverlayClick(evt) {
         if (evt.target.classList.contains('popup')) {
@@ -87,19 +90,20 @@ function App() {
         }
     }
 
-    function handleCardLike(card) {
+    const handleCardLike = useCallback((card) => {
         const isLiked = card.likes.some((like) => like._id === currentUser._id);
 
         api.changeLikeCardStatus(card._id, isLiked)
-            .then((newCard) => setCards(state => {
-                state.map((c) => c._id === card._id ? newCard : c);
-            }))
+            .then((newCard) => {
+                const newCards = cards.map((c) => (c._id === card._id ? newCard : c));
+                setCards(newCards);
+            })
             .catch((err) => console.log(err))
-    }
+    }, [cards, currentUser])
 
-    function handleCardDelete(card) {
+    const handleCardDelete = useCallback((card) => {
         setIsLoading(true);
-        api.deleteCard(card._id)
+        return api.deleteCard(card._id)
             .then(() => {
                 setCards(cards.filter((item) => {
                     return item._id !== card._id;
@@ -110,9 +114,9 @@ function App() {
             .finally(() => {
                 setIsLoading(false);
             })
-    }
+    }, [cards, closeAllPopups])
 
-    function handleUpdateUser(data) {
+    const handleUpdateUser = useCallback((data) => {
         setIsLoading(true)
         api.editProfile(data)
             .then((info) => {
@@ -125,9 +129,9 @@ function App() {
             .finally(() => {
                 setIsLoading(false);
             })
-    }
+    }, [closeAllPopups])
 
-    function handleUpdateAvatar(data) {
+    const handleUpdateAvatar = useCallback((data) => {
         setIsLoading(true);
         api.editAvatar(data)
             .then((info) => {
@@ -140,9 +144,9 @@ function App() {
             .finally(() => {
                 setIsLoading(false);
             })
-    }
+    }, [closeAllPopups])
 
-    function handleAddPlaceSubmit(data) {
+    const handleAddPlaceSubmit = useCallback((data) => {
         setIsLoading(true);
         api.addCard(data)
             .then((newCard) => {
@@ -155,16 +159,10 @@ function App() {
             .finally(() => {
                 setIsLoading(false);
             })
-    }
-
-    function handleDeleteCard(card) {
-        setIsConfirmationPopupOpen(true);
-        setDeletedCard(card);
-    }
+    }, [cards, closeAllPopups])
 
     useEffect(() => {
         const token = localStorage.getItem('jwt');
-
         if (token) {
             auth.getContent(token)
                 .then((res) => {

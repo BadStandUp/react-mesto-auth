@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useCallback, useState} from "react";
 import {Link} from "react-router-dom";
 
 function Register({handleRegisterSubmit}) {
@@ -10,13 +10,13 @@ function Register({handleRegisterSubmit}) {
         handleRegisterSubmit(email, password);
     }
 
-    function handleEmailChange(evt) {
+    const handleEmailChange = useCallback((evt) => {
         setEmail(evt.target.value)
-    }
+    }, [])
 
-    function handlePasswordChange(evt) {
+    const handlePasswordChange = useCallback((evt) => {
         setPassword(evt.target.value);
-    }
+    }, [])
 
     return (
         <main className='authentication'>
@@ -27,7 +27,7 @@ function Register({handleRegisterSubmit}) {
                            maxLength="30" value={email || ''} onChange={handleEmailChange} required/>
                     <input className='authentication__input' id='password' type="password" placeholder='Пароль'
                            minLength="2"
-                           maxLength="30" value={password || ''} onChange={handlePasswordChange} required/>
+                           maxLength="30" value={password || ''} onChange={() => handlePasswordChange} required/>
                     <button className='authentication__button' type='submit'>Зарегистрироваться</button>
                 </form>
                 <Link className='authentication__link' to='/sign-in'>Уже зарегистрированы? Войти</Link>
