@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import {useCallback} from "react";
 import {NavLink, useNavigate} from 'react-router-dom';
 
 import logo from "../images/logo.svg";
